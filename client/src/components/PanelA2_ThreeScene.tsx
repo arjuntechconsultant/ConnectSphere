@@ -170,12 +170,14 @@ export default function PanelA2_ThreeScene({
         ]);
         geometry.setAttribute("position", new THREE.BufferAttribute(vertices, 3));
         const material = new THREE.LineBasicMaterial({
-          color: 0x444444,
+          color: 0x6366f1,
           transparent: true,
-          opacity: 0.3,
+          opacity: 0.7,
+          linewidth: 2,
         });
         materials.push(material);
         const line = new THREE.Line(geometry, material);
+        line.userData = { isConnection: true };
         scene.add(line);
       }
     });
@@ -312,7 +314,7 @@ export default function PanelA2_ThreeScene({
   }, [selectedPerson, hoveredPerson]);
 
   return (
-    <div className="relative w-full h-[60vh] bg-gradient-to-b from-background to-muted/20 rounded-lg border border-card-border overflow-hidden">
+    <div className="relative w-full h-screen bg-gradient-to-b from-background to-muted/20 rounded-lg border border-card-border overflow-hidden">
       <div
         ref={containerRef}
         className="w-full h-full"
