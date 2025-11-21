@@ -19,6 +19,35 @@ interface PanelA2Props {
   setSelectedPerson: (person: Person) => void;
 }
 
+function createInitialsTexture(name: string): THREE.CanvasTexture {
+  const canvas = document.createElement("canvas");
+  canvas.width = 256;
+  canvas.height = 256;
+  const ctx = canvas.getContext("2d")!;
+
+  const gradient = ctx.createLinearGradient(0, 0, 256, 256);
+  gradient.addColorStop(0, "#8b5cf6");
+  gradient.addColorStop(1, "#6366f1");
+  ctx.fillStyle = gradient;
+  ctx.fillRect(0, 0, 256, 256);
+
+  const initials = name
+    .split(" ")
+    .map((n) => n[0])
+    .join("")
+    .toUpperCase();
+
+  ctx.fillStyle = "#ffffff";
+  ctx.font = "bold 100px Arial";
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+  ctx.fillText(initials, 128, 128);
+
+  const texture = new THREE.CanvasTexture(canvas);
+  texture.needsUpdate = true;
+  return texture;
+}
+
 export default function PanelA2_ThreeScene({
   people,
   connections,
@@ -27,7 +56,7 @@ export default function PanelA2_ThreeScene({
 }: PanelA2Props) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [hoveredPerson, setHoveredPerson] = useState<Person | null>(null);
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 });
   const sceneRef = useRef<{
     scene: THREE.Scene;
     camera: THREE.PerspectiveCamera;
@@ -37,23 +66,30 @@ export default function PanelA2_ThreeScene({
     raycaster: THREE.Raycaster;
     mouse: THREE.Vector2;
     animationId: number;
+    geometries: THREE.BufferGeometry[];
+    materials: THREE.Material[];
+    textures: THREE.Texture[];
   } | null>(null);
 
   useEffect(() => {
     if (!containerRef.current) return;
 
     const container = containerRef.current;
-    const width = container.clientWidth;
-    const height = container.clientHeight;
+    const rect = container.getBoundingClientRect();
 
     const scene = new THREE.Scene();
     scene.background = new THREE.Color(0x0a0a0a);
 
-    const camera = new THREE.PerspectiveCamera(75, width / height, 0.1, 1000);
+    const camera = new THREE.PerspectiveCamera(
+      75,
+      rect.width / rect.height,
+      0.1,
+      1000
+    );
     camera.position.set(0, 0, 15);
 
     const renderer = new THREE.WebGLRenderer({ antialias: true });
-    renderer.setSize(width, height);
+    renderer.setSize(rect.width, rect.height);
     renderer.setPixelRatio(window.devicePixelRatio);
     container.appendChild(renderer.domElement);
 
@@ -77,7 +113,9 @@ export default function PanelA2_ThreeScene({
     scene.add(pointLight2);
 
     const nodeMeshes = new Map<number, THREE.Mesh>();
-    const textureLoader = new THREE.TextureLoader();
+    const geometries: THREE.BufferGeometry[] = [];
+    const materials: THREE.Material[] = [];
+    const textures: THREE.Texture[] = [];
 
     const getPosition = (
       index: number,
@@ -96,39 +134,17 @@ export default function PanelA2_ThreeScene({
 
     people.forEach((person, index) => {
       const geometry = new THREE.SphereGeometry(0.7, 32, 32);
-      
-      textureLoader.load(
-        person.avatar,
-        (texture) => {
-          const material = new THREE.MeshStandardMaterial({
-            map: texture,
-            roughness: 0.4,
-            metalness: 0.3,
-          });
-          const mesh = nodeMeshes.get(person.id);
-          if (mesh) {
-            mesh.material = material;
-          }
-        },
-        undefined,
-        () => {
-          const material = new THREE.MeshStandardMaterial({
-            color: 0x8b5cf6,
-            roughness: 0.4,
-            metalness: 0.6,
-          });
-          const mesh = nodeMeshes.get(person.id);
-          if (mesh) {
-            mesh.material = material;
-          }
-        }
-      );
+      geometries.push(geometry);
+
+      const texture = createInitialsTexture(person.name);
+      textures.push(texture);
 
       const material = new THREE.MeshStandardMaterial({
-        color: 0x8b5cf6,
+        map: texture,
         roughness: 0.4,
-        metalness: 0.6,
+        metalness: 0.3,
       });
+      materials.push(material);
 
       const sphere = new THREE.Mesh(geometry, material);
       const position = getPosition(index, people.length);
@@ -143,6 +159,7 @@ export default function PanelA2_ThreeScene({
       const mesh2 = nodeMeshes.get(id2);
       if (mesh1 && mesh2) {
         const geometry = new THREE.BufferGeometry();
+        geometries.push(geometry);
         const vertices = new Float32Array([
           mesh1.position.x,
           mesh1.position.y,
@@ -157,6 +174,7 @@ export default function PanelA2_ThreeScene({
           transparent: true,
           opacity: 0.3,
         });
+        materials.push(material);
         const line = new THREE.Line(geometry, material);
         scene.add(line);
       }
@@ -167,13 +185,18 @@ export default function PanelA2_ThreeScene({
 
     const onMouseMove = (event: MouseEvent) => {
       const rect = container.getBoundingClientRect();
-      mouse.x = ((event.clientX - rect.left) / width) * 2 - 1;
-      mouse.y = -((event.clientY - rect.top) / height) * 2 + 1;
+      mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+      mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
 
-      setMousePosition({ x: event.clientX, y: event.clientY });
+      setTooltipPosition({
+        x: event.clientX,
+        y: event.clientY,
+      });
 
       raycaster.setFromCamera(mouse, camera);
-      const intersects = raycaster.intersectObjects(Array.from(nodeMeshes.values()));
+      const intersects = raycaster.intersectObjects(
+        Array.from(nodeMeshes.values())
+      );
 
       if (intersects.length > 0) {
         const hoveredMesh = intersects[0].object as THREE.Mesh;
@@ -188,7 +211,9 @@ export default function PanelA2_ThreeScene({
 
     const onClick = () => {
       raycaster.setFromCamera(mouse, camera);
-      const intersects = raycaster.intersectObjects(Array.from(nodeMeshes.values()));
+      const intersects = raycaster.intersectObjects(
+        Array.from(nodeMeshes.values())
+      );
 
       if (intersects.length > 0) {
         const clickedMesh = intersects[0].object as THREE.Mesh;
@@ -203,27 +228,15 @@ export default function PanelA2_ThreeScene({
     let time = 0;
     const animate = () => {
       const animationId = requestAnimationFrame(animate);
-      sceneRef.current!.animationId = animationId;
+      if (sceneRef.current) {
+        sceneRef.current.animationId = animationId;
+      }
 
       time += 0.01;
 
       nodeMeshes.forEach((mesh, id) => {
         const baseY = mesh.userData.baseY;
         mesh.position.y = baseY + Math.sin(time + id) * 0.3;
-
-        if (selectedPerson?.id === id) {
-          (mesh.material as THREE.MeshStandardMaterial).emissive.setHex(0x3b82f6);
-          (mesh.material as THREE.MeshStandardMaterial).emissiveIntensity = 0.6;
-          mesh.scale.set(1.2, 1.2, 1.2);
-        } else if (hoveredPerson?.id === id) {
-          (mesh.material as THREE.MeshStandardMaterial).emissive.setHex(0x6366f1);
-          (mesh.material as THREE.MeshStandardMaterial).emissiveIntensity = 0.4;
-          mesh.scale.set(1.1, 1.1, 1.1);
-        } else {
-          (mesh.material as THREE.MeshStandardMaterial).emissive.setHex(0x000000);
-          (mesh.material as THREE.MeshStandardMaterial).emissiveIntensity = 0;
-          mesh.scale.set(1, 1, 1);
-        }
       });
 
       controls.update();
@@ -231,11 +244,10 @@ export default function PanelA2_ThreeScene({
     };
 
     const onResize = () => {
-      const newWidth = container.clientWidth;
-      const newHeight = container.clientHeight;
-      camera.aspect = newWidth / newHeight;
+      const newRect = container.getBoundingClientRect();
+      camera.aspect = newRect.width / newRect.height;
       camera.updateProjectionMatrix();
-      renderer.setSize(newWidth, newHeight);
+      renderer.setSize(newRect.width, newRect.height);
     };
 
     window.addEventListener("resize", onResize);
@@ -249,6 +261,9 @@ export default function PanelA2_ThreeScene({
       raycaster,
       mouse,
       animationId: 0,
+      geometries,
+      materials,
+      textures,
     };
 
     animate();
@@ -257,42 +272,68 @@ export default function PanelA2_ThreeScene({
       window.removeEventListener("resize", onResize);
       container.removeEventListener("mousemove", onMouseMove);
       container.removeEventListener("click", onClick);
-      
+
       if (sceneRef.current) {
         cancelAnimationFrame(sceneRef.current.animationId);
         sceneRef.current.controls.dispose();
+
+        geometries.forEach((geo) => geo.dispose());
+        materials.forEach((mat) => mat.dispose());
+        textures.forEach((tex) => tex.dispose());
+
         sceneRef.current.renderer.dispose();
-        container.removeChild(sceneRef.current.renderer.domElement);
+        if (container.contains(sceneRef.current.renderer.domElement)) {
+          container.removeChild(sceneRef.current.renderer.domElement);
+        }
       }
     };
-  }, [people, connections]);
+  }, [people, connections, setSelectedPerson]);
 
   useEffect(() => {
-    if (sceneRef.current && selectedPerson) {
-      const mesh = sceneRef.current.nodeMeshes.get(selectedPerson.id);
-      if (mesh) {
+    if (!sceneRef.current) return;
+
+    const { nodeMeshes } = sceneRef.current;
+
+    nodeMeshes.forEach((mesh, id) => {
+      if (selectedPerson?.id === id) {
         (mesh.material as THREE.MeshStandardMaterial).emissive.setHex(0x3b82f6);
         (mesh.material as THREE.MeshStandardMaterial).emissiveIntensity = 0.6;
+        mesh.scale.set(1.2, 1.2, 1.2);
+      } else if (hoveredPerson?.id === id) {
+        (mesh.material as THREE.MeshStandardMaterial).emissive.setHex(0x6366f1);
+        (mesh.material as THREE.MeshStandardMaterial).emissiveIntensity = 0.4;
+        mesh.scale.set(1.1, 1.1, 1.1);
+      } else {
+        (mesh.material as THREE.MeshStandardMaterial).emissive.setHex(0x000000);
+        (mesh.material as THREE.MeshStandardMaterial).emissiveIntensity = 0;
+        mesh.scale.set(1, 1, 1);
       }
-    }
-  }, [selectedPerson]);
+    });
+  }, [selectedPerson, hoveredPerson]);
 
   return (
     <div className="relative w-full h-[60vh] bg-gradient-to-b from-background to-muted/20 rounded-lg border border-card-border overflow-hidden">
-      <div ref={containerRef} className="w-full h-full" data-testid="3d-network-container" />
+      <div
+        ref={containerRef}
+        className="w-full h-full"
+        data-testid="3d-network-container"
+      />
 
       {hoveredPerson && (
         <div
           className="fixed z-50 pointer-events-none"
           style={{
-            left: `${mousePosition.x + 15}px`,
-            top: `${mousePosition.y + 15}px`,
+            left: `${tooltipPosition.x + 15}px`,
+            top: `${tooltipPosition.y + 15}px`,
           }}
         >
           <div className="bg-card border border-card-border rounded-lg p-3 shadow-xl min-w-[220px]">
             <div className="flex items-center gap-3 mb-2">
               <Avatar className="h-10 w-10">
-                <AvatarImage src={hoveredPerson.avatar} alt={hoveredPerson.name} />
+                <AvatarImage
+                  src={hoveredPerson.avatar}
+                  alt={hoveredPerson.name}
+                />
                 <AvatarFallback>
                   {hoveredPerson.name
                     .split(" ")
@@ -301,10 +342,16 @@ export default function PanelA2_ThreeScene({
                 </AvatarFallback>
               </Avatar>
               <div>
-                <p className="font-semibold text-sm" data-testid={`text-person-name-${hoveredPerson.id}`}>
+                <p
+                  className="font-semibold text-sm"
+                  data-testid={`text-person-name-${hoveredPerson.id}`}
+                >
                   {hoveredPerson.name}
                 </p>
-                <p className="text-xs text-muted-foreground" data-testid={`text-person-title-${hoveredPerson.id}`}>
+                <p
+                  className="text-xs text-muted-foreground"
+                  data-testid={`text-person-title-${hoveredPerson.id}`}
+                >
                   {hoveredPerson.title}
                 </p>
               </div>
