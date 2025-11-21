@@ -97,9 +97,9 @@ const generatePersonDetails = () => {
     const timelineLength = Math.floor(Math.random() * 4) + 2;
     const selectedMonths = months.sort(() => Math.random() - 0.5).slice(0, timelineLength);
 
-    const timeline = selectedMonths.map(month => ({
+    const timeline = selectedMonths.map((month, index) => ({
       month,
-      interaction: interactions[Math.floor(Math.random() * interactions.length)]
+      interaction: index === 0 ? "Connection - Sent Request" : interactions[Math.floor(Math.random() * interactions.length)]
     }));
 
     const coffeeCount = Math.floor(Math.random() * 3);
