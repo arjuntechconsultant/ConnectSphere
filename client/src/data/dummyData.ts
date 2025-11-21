@@ -85,8 +85,13 @@ const generatePersonDetails = () => {
     coffeeChats: string[];
   }> = {};
 
-  const months = ["Jan", "Feb", "Mar", "Apr", "May"];
-  const interactions = ["Message", "Meeting", "Coffee Chat", "Referral", "Connection", "Tagged"];
+  const timelineItems = [
+    { month: "2025, Jan", interaction: "Sent Connection" },
+    { month: "2025, Feb", interaction: "Accepted Connection" },
+    { month: "2025, Mar", interaction: "Coffee Chat" },
+    { month: "2025, Apr", interaction: "Tagged Post" },
+    { month: "2025, May", interaction: "Mentor Meeting" }
+  ];
 
   for (let i = 1; i <= 300; i++) {
     const person = people[i - 1];
@@ -94,13 +99,9 @@ const generatePersonDetails = () => {
     const influence = 2.5 + Math.random() * 2.5;
     const referrals = Math.floor(Math.random() * 10);
     const interactionCount = Math.floor(Math.random() * 15) + 3;
-    const timelineLength = Math.floor(Math.random() * 4) + 2;
-    const selectedMonths = months.sort(() => Math.random() - 0.5).slice(0, timelineLength);
+    const timelineLength = Math.floor(Math.random() * 3) + 2;
 
-    const timeline = selectedMonths.map((month, index) => ({
-      month,
-      interaction: index === 0 ? "Connection - Sent Request" : interactions[Math.floor(Math.random() * interactions.length)]
-    }));
+    const timeline = timelineItems.slice(0, timelineLength);
 
     const coffeeCount = Math.floor(Math.random() * 3);
     const coffeeChats = [];
@@ -129,11 +130,11 @@ const generatePersonDetails = () => {
 export const personDetails = generatePersonDetails();
 
 export const timeline = [
-  { month: "Jan", type: "Message", content: "Discussed product roadmap" },
-  { month: "Feb", type: "Meeting", content: "Quarterly strategy meeting" },
-  { month: "Mar", type: "Coffee Chat", content: "Casual networking" },
-  { month: "Apr", type: "Tagged Post", content: "LinkedIn AI post" },
-  { month: "May", type: "Message", content: "Follow-up on proposal" }
+  { month: "2025, Jan", type: "Sent Connection", content: "Sent connection via add note" },
+  { month: "2025, Feb", type: "Accepted Connection", content: "Accepted connection" },
+  { month: "2025, Mar", type: "Coffee Chat", content: "Scheduled coffee chat and Casual networking" },
+  { month: "2025, Apr", type: "Tagged Post", content: "LinkedIn AI post" },
+  { month: "2025, May", type: "Mentor Meeting", content: "Follow-up on proposal" }
 ];
 
 export const jobApplications = [
