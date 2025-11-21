@@ -1,30 +1,46 @@
-export const people = [
-  { id: 1, name: "Arjun Singh", avatar: "https://i.pravatar.cc/150?img=1", title: "Product Manager", tags: ["Mentor", "Referral"] },
-  { id: 2, name: "Mia Patel", avatar: "https://i.pravatar.cc/150?img=2", title: "Software Engineer", tags: ["Peer"] },
-  { id: 3, name: "Liam Wong", avatar: "https://i.pravatar.cc/150?img=3", title: "Data Analyst", tags: ["Referral", "Connector"] },
-  { id: 4, name: "Emma Johnson", avatar: "https://i.pravatar.cc/150?img=4", title: "UX Designer", tags: ["Mentor"] },
-  { id: 5, name: "Noah Lee", avatar: "https://i.pravatar.cc/150?img=5", title: "Backend Engineer", tags: ["Peer"] },
-  { id: 6, name: "Olivia Smith", avatar: "https://i.pravatar.cc/150?img=6", title: "HR Specialist", tags: ["Mentor"] },
-  { id: 7, name: "Ethan Brown", avatar: "https://i.pravatar.cc/150?img=7", title: "Marketing Analyst", tags: ["Peer"] },
-  { id: 8, name: "Ava Davis", avatar: "https://i.pravatar.cc/150?img=8", title: "Product Designer", tags: ["Mentor", "Connector"] },
-  { id: 9, name: "William Garcia", avatar: "https://i.pravatar.cc/150?img=9", title: "Data Scientist", tags: ["Peer", "Referral"] },
-  { id: 10, name: "Sophia Martinez", avatar: "https://i.pravatar.cc/150?img=10", title: "Software Intern", tags: ["Peer"] }
-];
+const firstNames = ["Arjun", "Mia", "Liam", "Emma", "Noah", "Olivia", "Ethan", "Ava", "William", "Sophia", "James", "Charlotte", "Benjamin", "Amelia", "Lucas", "Harper", "Mason", "Evelyn", "Logan", "Abigail", "Alexander", "Emily", "Michael", "Elizabeth", "Elijah", "Mila", "Daniel", "Ella", "Matthew", "Avery", "Jacob", "Scarlett", "Jackson", "Victoria", "David", "Madison", "Joseph", "Chloe", "Samuel", "Penelope", "Henry", "Riley", "Albert", "Grace", "George", "Nora", "Frank", "Lily", "Edward", "Eleanor", "Thomas", "Zoey", "Arthur", "Hannah", "Stephen", "Lillian", "Paul", "Addison", "Lawrence", "Aubrey", "Ethan", "Brooklyn", "Joseph", "Bailey", "Samuel", "Clara", "Martin", "Paisley", "George", "Natalie", "Francis", "Camila", "Charles", "Samantha", "Richard", "Alexis", "Donald", "Ariana", "Kenneth", "Margaret", "Steven", "Sophia", "Brian", "Isabella", "Edward", "Emma", "Ronald", "Olivia", "Anthony", "Ava"];
+const lastNames = ["Singh", "Patel", "Wong", "Johnson", "Lee", "Smith", "Brown", "Davis", "Garcia", "Martinez", "Williams", "Jones", "Miller", "Taylor", "Wilson", "Anderson", "Thomas", "Taylor", "Moore", "Jackson", "Martin", "Harris", "Thompson", "White", "Clark", "Lewis", "Walker", "Hall", "Young", "King", "Scott", "Green", "Adams", "Nelson", "Carter", "Roberts", "Edwards", "Collins", "Stewart", "Morris", "Rogers", "Morgan", "Peterson", "Cooper", "Reed", "Bell", "Howard", "Cox", "Richardson", "Wood", "Watson", "Brooks", "Gordon", "Hunt", "Hicks"];
+const titles = ["Product Manager", "Software Engineer", "Data Analyst", "UX Designer", "Backend Engineer", "HR Specialist", "Marketing Analyst", "Product Designer", "Data Scientist", "Software Intern", "Frontend Developer", "DevOps Engineer", "QA Engineer", "Business Analyst", "Solutions Architect", "Cloud Engineer", "Machine Learning Engineer", "Security Engineer", "System Administrator", "Network Engineer", "Graphic Designer", "Content Strategist", "SEO Specialist", "Social Media Manager", "Brand Manager", "Sales Executive", "Account Manager", "Customer Success Manager", "Technical Writer", "Finance Analyst"];
+const tags = ["Mentor", "Peer", "Referral", "Connector", "Colleague", "Friend"];
 
-export const networkConnections: [number, number][] = [
-  [1, 2],
-  [1, 4],
-  [1, 8],
-  [2, 5],
-  [2, 10],
-  [3, 9],
-  [3, 6],
-  [4, 8],
-  [5, 10],
-  [6, 8],
-  [7, 9],
-  [8, 10],
-];
+const generatePeople = () => {
+  const peopleArray = [];
+  for (let i = 1; i <= 300; i++) {
+    const firstName = firstNames[i % firstNames.length];
+    const lastName = lastNames[Math.floor(i / firstNames.length) % lastNames.length];
+    const title = titles[i % titles.length];
+    const tag1 = tags[i % tags.length];
+    const tag2 = tags[(i + 1) % tags.length];
+    const personTags = Math.random() > 0.5 ? [tag1] : [tag1, tag2];
+    
+    peopleArray.push({
+      id: i,
+      name: `${firstName} ${lastName}`,
+      avatar: `https://i.pravatar.cc/150?img=${(i % 70) + 1}`,
+      title: title,
+      tags: personTags
+    });
+  }
+  return peopleArray;
+};
+
+export const people = generatePeople();
+
+const generateConnections = () => {
+  const connections: [number, number][] = [];
+  for (let i = 1; i <= 300; i++) {
+    const connectionCount = Math.floor(Math.random() * 4) + 1;
+    for (let j = 0; j < connectionCount; j++) {
+      const target = Math.floor(Math.random() * 300) + 1;
+      if (target !== i && !connections.some(([a, b]) => (a === i && b === target) || (a === target && b === i))) {
+        connections.push([i, target]);
+      }
+    }
+  }
+  return connections;
+};
+
+export const networkConnections = generateConnections();
 
 export const personDetails: Record<number, {
   bio: string;
