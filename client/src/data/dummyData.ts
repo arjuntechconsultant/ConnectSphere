@@ -42,126 +42,91 @@ const generateConnections = () => {
 
 export const networkConnections = generateConnections();
 
-export const personDetails: Record<number, {
-  bio: string;
-  skills: string[];
-  lists: string[];
-  horizontalTimeline: { month: string; interaction: string }[];
-  stats: { influence: number; referrals: number; interactions: number };
-  coffeeChats: string[];
-}> = {
-  1: {
-    bio: "Product Manager with 5 years experience in fintech",
-    skills: ["Product Strategy", "Roadmap", "Analytics"],
-    lists: ["Mentor", "Referral"],
-    horizontalTimeline: [
-      { month: "Jan", interaction: "Message" },
-      { month: "Feb", interaction: "Coffee Chat" },
-      { month: "Mar", interaction: "Meeting" },
-      { month: "Apr", interaction: "Tagged" }
-    ],
-    stats: { influence: 4.5, referrals: 3, interactions: 12 },
-    coffeeChats: ["2025-11-05", "2025-11-10"]
-  },
-  2: {
-    bio: "Full-stack engineer specializing in React and Node.js",
-    skills: ["React", "Node.js", "TypeScript"],
-    lists: ["Peer"],
-    horizontalTimeline: [
-      { month: "Jan", interaction: "Connection" },
-      { month: "Mar", interaction: "Message" }
-    ],
-    stats: { influence: 3.8, referrals: 1, interactions: 5 },
-    coffeeChats: ["2025-10-15"]
-  },
-  3: {
-    bio: "Data analyst with expertise in Python and SQL",
-    skills: ["Python", "SQL", "Tableau"],
-    lists: ["Referral", "Connector"],
-    horizontalTimeline: [
-      { month: "Feb", interaction: "Coffee Chat" },
-      { month: "Apr", interaction: "Referral" }
-    ],
-    stats: { influence: 4.2, referrals: 5, interactions: 8 },
-    coffeeChats: ["2025-11-01"]
-  },
-  4: {
-    bio: "UX Designer passionate about creating intuitive interfaces",
-    skills: ["Figma", "User Research", "Prototyping"],
-    lists: ["Mentor"],
-    horizontalTimeline: [
-      { month: "Jan", interaction: "Meeting" },
-      { month: "Mar", interaction: "Coffee Chat" }
-    ],
-    stats: { influence: 4.0, referrals: 2, interactions: 7 },
-    coffeeChats: ["2025-10-20", "2025-11-08"]
-  },
-  5: {
-    bio: "Backend engineer with focus on scalable systems",
-    skills: ["Go", "Docker", "Kubernetes"],
-    lists: ["Peer"],
-    horizontalTimeline: [
-      { month: "Feb", interaction: "Message" }
-    ],
-    stats: { influence: 3.5, referrals: 1, interactions: 3 },
-    coffeeChats: []
-  },
-  6: {
-    bio: "HR Specialist focused on talent acquisition and development",
-    skills: ["Recruiting", "Employee Relations", "Training"],
-    lists: ["Mentor"],
-    horizontalTimeline: [
-      { month: "Jan", interaction: "Coffee Chat" },
-      { month: "Feb", interaction: "Meeting" },
-      { month: "Mar", interaction: "Referral" }
-    ],
-    stats: { influence: 4.7, referrals: 8, interactions: 15 },
-    coffeeChats: ["2025-10-25", "2025-11-12"]
-  },
-  7: {
-    bio: "Marketing analyst with data-driven approach",
-    skills: ["Google Analytics", "SEO", "Content Strategy"],
-    lists: ["Peer"],
-    horizontalTimeline: [
-      { month: "Mar", interaction: "Connection" }
-    ],
-    stats: { influence: 3.2, referrals: 0, interactions: 2 },
-    coffeeChats: []
-  },
-  8: {
-    bio: "Product designer creating delightful user experiences",
-    skills: ["UI Design", "Design Systems", "Animation"],
-    lists: ["Mentor", "Connector"],
-    horizontalTimeline: [
-      { month: "Jan", interaction: "Message" },
-      { month: "Feb", interaction: "Coffee Chat" },
-      { month: "Apr", interaction: "Tagged" }
-    ],
-    stats: { influence: 4.3, referrals: 4, interactions: 10 },
-    coffeeChats: ["2025-11-03", "2025-11-15"]
-  },
-  9: {
-    bio: "Data scientist specializing in machine learning",
-    skills: ["Python", "TensorFlow", "Statistics"],
-    lists: ["Peer", "Referral"],
-    horizontalTimeline: [
-      { month: "Feb", interaction: "Meeting" },
-      { month: "Mar", interaction: "Referral" }
-    ],
-    stats: { influence: 4.1, referrals: 3, interactions: 6 },
-    coffeeChats: ["2025-10-30"]
-  },
-  10: {
-    bio: "Software intern learning web development",
-    skills: ["JavaScript", "HTML", "CSS"],
-    lists: ["Peer"],
-    horizontalTimeline: [
-      { month: "Apr", interaction: "Connection" }
-    ],
-    stats: { influence: 2.8, referrals: 0, interactions: 1 },
-    coffeeChats: []
-  }
+const skillsByTitle: Record<string, string[]> = {
+  "Product Manager": ["Product Strategy", "Roadmap", "Analytics", "Market Research"],
+  "Software Engineer": ["JavaScript", "React", "Node.js", "TypeScript", "Python"],
+  "Data Analyst": ["Python", "SQL", "Tableau", "Analytics", "Excel"],
+  "UX Designer": ["Figma", "User Research", "Prototyping", "Design Systems"],
+  "Backend Engineer": ["Go", "Docker", "Kubernetes", "APIs", "Databases"],
+  "HR Specialist": ["Recruiting", "Employee Relations", "Training", "Negotiations"],
+  "Marketing Analyst": ["Google Analytics", "SEO", "Content Strategy", "Marketing"],
+  "Product Designer": ["UI Design", "Design Systems", "Animation", "Prototyping"],
+  "Data Scientist": ["Python", "TensorFlow", "Statistics", "Machine Learning"],
+  "Software Intern": ["JavaScript", "HTML", "CSS", "Git", "Agile"],
+  "Frontend Developer": ["React", "Vue", "CSS", "JavaScript", "TypeScript"],
+  "DevOps Engineer": ["Docker", "Kubernetes", "CI/CD", "AWS", "Linux"],
+  "QA Engineer": ["Testing", "Automation", "Selenium", "JIRA", "Documentation"],
+  "Business Analyst": ["Requirements", "Documentation", "SQL", "Excel", "JIRA"],
+  "Solutions Architect": ["System Design", "Cloud", "APIs", "Databases", "Security"],
+  "Cloud Engineer": ["AWS", "Azure", "GCP", "Kubernetes", "Infrastructure"],
+  "Machine Learning Engineer": ["TensorFlow", "PyTorch", "Python", "Statistics", "NLP"],
+  "Security Engineer": ["Network Security", "Cryptography", "Penetration Testing", "Security"],
+  "System Administrator": ["Linux", "Windows Server", "Networking", "Database Admin"],
+  "Network Engineer": ["Networking", "Cisco", "Firewalls", "Routing", "Security"],
+  "Graphic Designer": ["Photoshop", "Illustrator", "Design", "Branding", "Visual Design"],
+  "Content Strategist": ["Content", "SEO", "Writing", "Marketing", "Analytics"],
+  "SEO Specialist": ["SEO", "Analytics", "Content", "Link Building", "Keyword Research"],
+  "Social Media Manager": ["Social Media", "Content", "Marketing", "Analytics", "Engagement"],
+  "Brand Manager": ["Branding", "Marketing", "Strategy", "Design", "Communications"],
+  "Sales Executive": ["Sales", "Negotiation", "CRM", "Business Development", "Pitching"],
+  "Account Manager": ["Account Management", "Client Relations", "CRM", "Sales", "Negotiation"],
+  "Customer Success Manager": ["Customer Relations", "Support", "Training", "Documentation", "CRM"],
+  "Technical Writer": ["Writing", "Documentation", "Tools", "Clear Communication", "Markdown"],
+  "Finance Analyst": ["Finance", "Excel", "Analysis", "Reporting", "Budgeting"]
 };
+
+const generatePersonDetails = () => {
+  const detailsRecord: Record<number, {
+    bio: string;
+    skills: string[];
+    lists: string[];
+    horizontalTimeline: { month: string; interaction: string }[];
+    stats: { influence: number; referrals: number; interactions: number };
+    coffeeChats: string[];
+  }> = {};
+
+  const months = ["Jan", "Feb", "Mar", "Apr", "May"];
+  const interactions = ["Message", "Meeting", "Coffee Chat", "Referral", "Connection", "Tagged"];
+
+  for (let i = 1; i <= 300; i++) {
+    const person = people[i - 1];
+    const titleSkills = skillsByTitle[person.title] || ["Problem Solving", "Communication", "Teamwork"];
+    const influence = 2.5 + Math.random() * 2.5;
+    const referrals = Math.floor(Math.random() * 10);
+    const interactionCount = Math.floor(Math.random() * 15) + 3;
+    const timelineLength = Math.floor(Math.random() * 4) + 2;
+    const selectedMonths = months.sort(() => Math.random() - 0.5).slice(0, timelineLength);
+
+    const timeline = selectedMonths.map(month => ({
+      month,
+      interaction: interactions[Math.floor(Math.random() * interactions.length)]
+    }));
+
+    const coffeeCount = Math.floor(Math.random() * 3);
+    const coffeeChats = [];
+    for (let j = 0; j < coffeeCount; j++) {
+      const day = Math.floor(Math.random() * 28) + 1;
+      coffeeChats.push(`2025-${String(Math.floor(Math.random() * 12) + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`);
+    }
+
+    detailsRecord[i] = {
+      bio: `${person.title} with expertise in ${titleSkills.slice(0, 2).join(" and ")}. Passionate about ${person.tags[0]?.toLowerCase() || "professional growth"} and creating impact.`,
+      skills: titleSkills,
+      lists: person.tags,
+      horizontalTimeline: timeline,
+      stats: {
+        influence: Math.round(influence * 10) / 10,
+        referrals,
+        interactions: interactionCount
+      },
+      coffeeChats
+    };
+  }
+
+  return detailsRecord;
+};
+
+export const personDetails = generatePersonDetails();
 
 export const timeline = [
   { month: "Jan", type: "Message", content: "Discussed product roadmap" },
