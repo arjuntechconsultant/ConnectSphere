@@ -1,6 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { MessageSquare, Video, Coffee, Tag } from "lucide-react";
+import { MessageSquare, Video, Coffee, Tag, UserPlus, UserCheck, Award } from "lucide-react";
 
 interface TimelineItem {
   month: string;
@@ -23,6 +23,12 @@ export default function PanelE_VerticalTimeline({ timeline }: PanelEProps) {
         return <Coffee className="h-4 w-4" />;
       case "tagged post":
         return <Tag className="h-4 w-4" />;
+      case "sent connection":
+        return <UserPlus className="h-4 w-4" />;
+      case "accepted connection":
+        return <UserCheck className="h-4 w-4" />;
+      case "mentor meeting":
+        return <Award className="h-4 w-4" />;
       default:
         return <MessageSquare className="h-4 w-4" />;
     }
@@ -38,6 +44,12 @@ export default function PanelE_VerticalTimeline({ timeline }: PanelEProps) {
         return "bg-chart-3";
       case "tagged post":
         return "bg-chart-4";
+      case "sent connection":
+        return "bg-blue-500";
+      case "accepted connection":
+        return "bg-green-500";
+      case "mentor meeting":
+        return "bg-purple-500";
       default:
         return "bg-muted";
     }
