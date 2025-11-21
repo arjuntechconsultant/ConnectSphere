@@ -1,5 +1,5 @@
 import { Canvas } from "@react-three/fiber";
-import { OrbitControls, Float, Html, useTexture } from "@react-three/drei";
+import { OrbitControls, Float, Html } from "@react-three/drei";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Suspense, useRef, useState } from "react";
@@ -45,7 +45,6 @@ function PersonBubble({ person, position, isSelected, onClick }: PersonBubblePro
           onPointerOver={() => setHovered(true)}
           onPointerOut={() => setHovered(false)}
           scale={hovered ? 1.1 : 1}
-          data-testid={`bubble-${person.id}`}
         >
           <sphereGeometry args={[0.5, 32, 32]} />
           <meshStandardMaterial
