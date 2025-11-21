@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import PanelA_BubbleField from "@/components/PanelA_BubbleField";
+import PanelA2_ThreeScene from "@/components/PanelA2_ThreeScene";
 import PanelB_DetailsCard from "@/components/PanelB_DetailsCard";
 import PanelC_Ratings from "@/components/PanelC_Ratings";
 import PanelD_AIPrompt from "@/components/PanelD_AIPrompt";
@@ -23,6 +24,7 @@ import NotificationsPanel from "@/components/NotificationsPanel";
 import ThemeToggle from "@/components/ThemeToggle";
 import {
   people,
+  networkConnections,
   personDetails,
   timeline,
   jobApplications,
@@ -112,11 +114,25 @@ export default function HomePage() {
           <TabsContent value="networking" className="space-y-6">
             <Card>
               <CardHeader>
-                <CardTitle>Network Visualization</CardTitle>
+                <CardTitle>Network Visualization (react-three-fiber)</CardTitle>
               </CardHeader>
               <CardContent>
                 <PanelA_BubbleField
                   people={people}
+                  selectedPerson={selectedPerson}
+                  setSelectedPerson={setSelectedPerson}
+                />
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle>3D Network Visualization (Pure Three.js)</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <PanelA2_ThreeScene
+                  people={people}
+                  connections={networkConnections}
                   selectedPerson={selectedPerson}
                   setSelectedPerson={setSelectedPerson}
                 />
