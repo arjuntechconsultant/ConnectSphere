@@ -16,7 +16,7 @@ interface PersonDetails {
   skills: string[];
   lists: string[];
   horizontalTimeline: { month: string; interaction: string }[];
-  stats: { influence: number; referrals: number; interactions: number };
+  stats: { influence: number; referrals: number; interactions: number; responseTime: number };
 }
 
 interface PanelBProps {
@@ -103,7 +103,7 @@ export default function PanelB_DetailsCard({
           </ScrollArea>
         </div>
 
-        <div className="grid grid-cols-3 gap-4 pt-2">
+        <div className="grid grid-cols-4 gap-4 pt-2">
           <div className="text-center">
             <p className="text-2xl font-bold text-primary">
               {personDetails.stats.influence}
@@ -121,6 +121,12 @@ export default function PanelB_DetailsCard({
               {personDetails.stats.interactions}
             </p>
             <p className="text-xs text-muted-foreground">Interactions</p>
+          </div>
+          <div className="text-center">
+            <p className="text-2xl font-bold text-primary">
+              {personDetails.stats.responseTime}
+            </p>
+            <p className="text-xs text-muted-foreground">Response Time (hrs)</p>
           </div>
         </div>
       </CardContent>

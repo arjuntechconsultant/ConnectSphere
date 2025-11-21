@@ -81,7 +81,7 @@ const generatePersonDetails = () => {
     skills: string[];
     lists: string[];
     horizontalTimeline: { month: string; interaction: string }[];
-    stats: { influence: number; referrals: number; interactions: number };
+    stats: { influence: number; referrals: number; interactions: number; responseTime: number };
     coffeeChats: string[];
   }> = {};
 
@@ -110,6 +110,8 @@ const generatePersonDetails = () => {
       coffeeChats.push(`2025-${String(Math.floor(Math.random() * 12) + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`);
     }
 
+    const responseTime = Math.floor(Math.random() * 100) + 1;
+    
     detailsRecord[i] = {
       bio: `${person.title} with expertise in ${titleSkills.slice(0, 2).join(" and ")}. Passionate about ${person.tags[0]?.toLowerCase() || "professional growth"} and creating impact.`,
       skills: titleSkills,
@@ -118,7 +120,8 @@ const generatePersonDetails = () => {
       stats: {
         influence: Math.round(influence * 10) / 10,
         referrals,
-        interactions: interactionCount
+        interactions: interactionCount,
+        responseTime
       },
       coffeeChats
     };
