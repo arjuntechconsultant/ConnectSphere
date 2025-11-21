@@ -11,6 +11,21 @@ export const people = [
   { id: 10, name: "Sophia Martinez", avatar: "https://i.pravatar.cc/150?img=10", title: "Software Intern", tags: ["Peer"] }
 ];
 
+export const networkConnections: [number, number][] = [
+  [1, 2],
+  [1, 4],
+  [1, 8],
+  [2, 5],
+  [2, 10],
+  [3, 9],
+  [3, 6],
+  [4, 8],
+  [5, 10],
+  [6, 8],
+  [7, 9],
+  [8, 10],
+];
+
 export const personDetails: Record<number, {
   bio: string;
   skills: string[];
