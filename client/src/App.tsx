@@ -9,11 +9,13 @@ import NotFound from "@/pages/not-found";
 function Router() {
   return (
     <Switch>
-      <Route path="/" component={HomePage} />
+      <Route path="/ConnectSphere/" component={HomePage} />
+      <Route path="/ConnectSphere/:rest*" component={HomePage} /> {/* SPA fallback */}
       <Route component={NotFound} />
     </Switch>
   );
 }
+
 
 function App() {
   return (
