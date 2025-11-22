@@ -30,13 +30,16 @@ jobs:
         run: npm run build
         
       - name: Copy index.html to 404.html
-        run: cp dist/public/index.html dist/public/404.html
+        run: cp dist/index.html dist/404.html
 
       - name: Upload artifact for GitHub Pages
         uses: actions/upload-pages-artifact@v4
         with:
-          path: ./dist/public
+          path: ./dist
 
+      - name: Check dist folder
+        run: ls -R dist
+        
   deploy:
     needs: build
     runs-on: ubuntu-latest
